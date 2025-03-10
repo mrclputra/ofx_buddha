@@ -3,7 +3,50 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	ofSetLogLevel(OF_LOG_VERBOSE);
 	ofSetBackgroundColor(ofFloatColor(0.0f));
+
+	// check if shadows supported
+	if (!ofShadow::areShadowsSupported()) {
+		ofLogError() << "Shadows are not supported on this platform!";
+	}
+
+	// configure lights
+	// - light 1: directional area light
+	auto light1 = std::make_shared<ofLight>();
+	light1->enable();
+	light1->setDirectional();
+	light1->setPosition(500, 500, 500);
+	light1->lookAt(glm::vec3(0, 0, 0));
+	light1->setDiffuseColor(ofFloatColor(1, 1, 1));
+	light1->setSpecularColor(ofFloatColor(1.0, 1.0, 1.0));
+	light1->getShadow().setStrength(0.6f);
+	light1->getShadow().setNearClip(100);
+	light1->getShadow().setFarClip(2000);
+	lights.push_back(light1);
+
+	// - light 2: spotlight
+	auto light2 = std::make_shared<ofLight>();
+	light2->enable();
+	light2->setSpotlight(60, 20);
+	light2->getShadow().setNearClip(200);
+	light2->getShadow().setFarClip(2000);
+	light2->getShadow().setStrength(0.6f);
+	light2->setPosition(210, 330.0, 750);
+	light2->setAmbientColor(ofFloatColor(0.4));
+	// orient
+	/*glm::quat xq = glm::angleAxis(glm::radians(-30.0f), glm::vec3(1, 0, 0));
+	glm::quat yq = glm::angleAxis(glm::radians(20.0f), glm::vec3(0, 1, 0));
+	spotLight->setOrientation(yq * xq);*/
+	light2->lookAt(ofVec3f(0.0f, 0.0f, 0.0f));
+	lights.push_back(light2);
+
+	// configure shadows
+	ofShadow::enableAllShadows();
+	ofShadow::setAllShadowBias(0.007);
+	ofShadow::setAllShadowNormalBias(-4.0f);
+	ofShadow::setAllShadowTypes(OF_SHADOW_TYPE_PCF_LOW);
+	ofShadow::setAllShadowSampleRadius(4.0f); // softness
 
 	// configure scene objects
 	boxMesh = ofMesh::box(1, 1, 1, 24, 24, 24);
@@ -12,45 +55,13 @@ void ofApp::setup(){
 	baseMaterial.setShininess(60);
 	baseMaterial.setSpecularColor(ofFloatColor(1));
 
+	bgMaterial.setDiffuseColor(ofFloatColor(0.15));
+	bgMaterial.setShininess(0.0);
+	bgMaterial.setSpecularColor(ofFloatColor(0.25));
+
 	// configure camera
 	camera.setPosition(150, 0, 0);
 	camera.lookAt(ofVec3f(0, 0, 0));
-
-	// configure lights
-	// - light 1: directional area light
-	auto areaLight = std::make_shared<ofLight>();
-	areaLight->enable();
-	areaLight->setDirectional();
-	areaLight->setPosition(500, 500, 500);
-	areaLight->lookAt(glm::vec3(0, 0, 0));
-	areaLight->setDiffuseColor(ofFloatColor(1, 1, 1));
-	areaLight->setSpecularColor(ofFloatColor(1.0, 1.0, 1.0));
-	areaLight->getShadow().setStrength(1.0f);
-	areaLight->getShadow().setNearClip(100);
-	areaLight->getShadow().setFarClip(2000);
-	lights.push_back(areaLight);
-
-	// - light 2: spotlight
-	auto spotLight = std::make_shared<ofLight>();
-	spotLight->enable();
-	spotLight->setSpotlight(60, 20);
-	spotLight->getShadow().setNearClip(200);
-	spotLight->getShadow().setFarClip(2000);
-	spotLight->getShadow().setStrength(0.6f);
-	spotLight->setPosition(210, 330.0, 750);
-	spotLight->setAmbientColor(ofFloatColor(0.4));
-	// orient
-	glm::quat xq = glm::angleAxis(glm::radians(-30.0f), glm::vec3(1, 0, 0));
-	glm::quat yq = glm::angleAxis(glm::radians(20.0f), glm::vec3(0, 1, 0));
-	spotLight->setOrientation(yq * xq);
-	lights.push_back(spotLight);
-
-	// configure shadows
-	ofShadow::enableAllShadows();
-	ofShadow::setAllShadowBias(0.007);
-	ofShadow::setAllShadowNormalBias(-4.f);
-	ofShadow::setAllShadowTypes(OF_SHADOW_TYPE_PCF_HIGH);
-	ofShadow::setAllShadowSampleRadius(10.0f); // softness
 }
 
 //--------------------------------------------------------------
@@ -60,13 +71,13 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	// enable perspective
 	ofEnableDepthTest();
 
 	for (int i = 0; i < lights.size(); i++) {
 		auto& light = lights[i];
 		// query light to see if it has a depth pass
 		if (light->shouldRenderShadowDepthPass()) {
+			ofLog() << "Rendering shadow depth pass for light " << i;
 			// Get the number of passes required.
 			// By default the number of passes is 1. And we could just call beginShadowDepthPass() or beginShadowDepthPass(0);
 			// It will be more than one pass if it is a pointlight with setSingleOmniPass set to false
@@ -94,7 +105,7 @@ void ofApp::draw(){
 		}
 	}
 
-	// do camera stuff
+	// main rendering pass
 	camera.begin();
 	if (!ofIsGLProgrammableRenderer()) {
 		ofEnableLighting();
@@ -111,9 +122,38 @@ void ofApp::draw(){
 		ofDisableLighting();
 	}
 
-	camera.end();
+	for (int i = 0; i < lights.size(); i++) {
+		auto& light = lights[i];
 
+		ofSetColor(light->getDiffuseColor());
+		/*if (light->getType() == OF_LIGHT_POINT) {
+			ofDrawSphere(light->getPosition(), 12);
+		}
+		else {
+			light->draw();
+		}*/
+		ofDrawSphere(light->getPosition(), 5);
+		/*if (light->getIsEnabled() && light->getShadow().getIsEnabled()) {
+			light->getShadow().drawFrustum();
+		}*/
+	}
+
+	camera.end();
 	ofDisableDepthTest();
+
+	stringstream ss;
+
+	if (!ofIsGLProgrammableRenderer()) {
+		ss << endl << "SHADOWS ONLY WORK WITH PROGRAMMABLE RENDERER!" << endl;
+	}
+	else if (!ofShadow::areShadowsSupported()) {
+		ss << endl << "SHADOWS NOT SUPPORTED ON THIS PLATFORM!" << endl;
+	}
+
+	ofDrawBitmapStringHighlight(ss.str(), 20, 20);
+
+	ofSetColor(255);
+	ofEnableAlphaBlending();
 }
 
 void ofApp::renderScene() {
@@ -129,6 +169,14 @@ void ofApp::renderScene() {
 		boxMesh.draw();
 	} ofPopMatrix();
 	baseMaterial.end();
+
+	bgMaterial.begin();
+	ofPushMatrix(); {
+		ofTranslate(0, -50, 0);
+		ofScale(1000, 1, 1000);
+		boxMesh.draw();
+	} ofPopMatrix();
+	bgMaterial.end();
 }
 
 //--------------------------------------------------------------
