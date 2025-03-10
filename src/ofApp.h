@@ -20,5 +20,15 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+		void renderScene();
 		
+		vector<shared_ptr<ofLight>> lights;
+
+		// objects
+		ofEasyCam camera;
+		ofMesh boxMesh;
+
+		// materials
+		ofMaterial baseMaterial;
 };
