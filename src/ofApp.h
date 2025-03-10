@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxAssimpModelLoader.h"
 
 class ofApp : public ofBaseApp{
 
@@ -27,6 +28,8 @@ class ofApp : public ofBaseApp{
 
 		// objects
 		ofEasyCam camera;
+		ofxAssimpModelLoader model;
+		ofMesh buddhaMesh;
 		ofMesh boxMesh;
 
 		// materials

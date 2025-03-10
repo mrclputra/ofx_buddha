@@ -51,6 +51,8 @@ void ofApp::setup(){
 	// configure scene objects
 	boxMesh = ofMesh::box(1, 1, 1, 24, 24, 24);
 
+	model.loadModel("stanford/happy_vrip.ply", true);
+
 	baseMaterial.setDiffuseColor(ofFloatColor(0.8f));
 	baseMaterial.setShininess(60);
 	baseMaterial.setSpecularColor(ofFloatColor(1));
@@ -160,13 +162,22 @@ void ofApp::renderScene() {
 	float etimef = ofGetElapsedTimef();
 
 	// draw base cube, rotate over time
-	baseMaterial.begin();
+	/*baseMaterial.begin();
 	ofPushMatrix(); {
 		ofTranslate(0, 0, 0);
 		ofRotateZDeg(ofWrapDegrees((etimef * 0.04) * 360));
 		ofRotateXDeg(ofWrapDegrees((etimef * 0.06) * 360));
 		ofScale(50, 50, 50);
 		boxMesh.draw();
+	} ofPopMatrix();
+	baseMaterial.end();*/
+
+	baseMaterial.begin();
+	ofPushMatrix(); {
+		ofTranslate(0, 0, 0);
+		ofRotateDeg(180, 1, 0, 0);
+		ofScale(0.2f, 0.2f, 0.2f);
+		model.drawFaces();
 	} ofPopMatrix();
 	baseMaterial.end();
 
