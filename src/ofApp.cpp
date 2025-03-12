@@ -82,11 +82,20 @@ void ofApp::setup(){
 	// configure camera
 	camera.setPosition(150, 0, 0);
 	camera.lookAt(ofVec3f(0, 0, 0));
+	//ofAddListener(ofEvents().mouseScrolled, this, &ofApp::mouseScrolled);
+	listener = ofEvents().mouseScrolled.newListener([this](ofMouseEventArgs& m) {
+		// on mouse scroll wheel
+		mouseScrolled(m);
+		});
+	orbitLon = 0; // longitude
+	orbitLat = 0; // latitude
+	orbitRadius = 300;
+	isOrbiting = false;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+	updateOrbitCamera();
 }
 
 //--------------------------------------------------------------
@@ -209,6 +218,22 @@ void ofApp::renderScene() {
 	bgMaterial.end();
 }
 
+void ofApp::updateOrbitCamera() {
+    // convert spherical to cartesian coordinates
+    float latRad = glm::radians(orbitLat);
+    float lonRad = glm::radians(orbitLon);
+
+    glm::vec3 pos;
+    pos.x = orbitRadius * cos(latRad) * sin(lonRad);
+    pos.y = orbitRadius * sin(latRad);
+    pos.z = orbitRadius * cos(latRad) * cos(lonRad);
+
+    // update camera position
+	// can be modified to have an offset (parent object)
+    camera.setPosition(pos);
+    camera.lookAt(glm::vec3(0, 0, 0));
+}
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 
@@ -224,19 +249,46 @@ void ofApp::mouseMoved(int x, int y ){
 
 }
 
+void ofApp::mouseScrolled(ofMouseEventArgs& mouse) {
+	/*glm::vec3 position = camera.getPosition();
+	position.y += mouse.scrollY;
+	camera.setPosition(position);*/
+
+	orbitRadius -= mouse.scrollY * 10.0f;
+	orbitRadius = glm::clamp(orbitRadius, 50.0f, 1000.0f);
+}
+
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
+	if (isOrbiting && button == OF_MOUSE_BUTTON_LEFT) {
+		// get mouse delta
+		glm::vec2 mouseDelta = glm::vec2(x, y) - lastMousePos;
+		lastMousePos = glm::vec2(x, y);
 
+		// update orbit angles
+		orbitLon += mouseDelta.x * -0.5f;
+		orbitLat -= mouseDelta.y * -0.5f;
+
+		// clamp latitude
+		orbitLat = glm::clamp(orbitLat, -89.0f, 89.0f);
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+	if (button == OF_MOUSE_BUTTON_LEFT) {
+		isOrbiting = true;
+		lastMousePos = glm::vec2(x, y);
+	}
 }
+
+
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+	if (button == OF_MOUSE_BUTTON_LEFT) {
+		isOrbiting = false;
+	}
 }
 
 //--------------------------------------------------------------

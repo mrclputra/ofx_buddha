@@ -11,6 +11,8 @@ class ofApp : public ofBaseApp{
 		void draw();
 
 		void renderScene();
+		void updateOrbitCamera();
+		void mouseScrolled(ofMouseEventArgs& mouse);
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -27,7 +29,6 @@ class ofApp : public ofBaseApp{
 		vector<shared_ptr<ofLight>> lights;
 
 		// objects
-		ofEasyCam camera;
 		ofxAssimpModelLoader model;
 		ofMesh buddhaMesh;
 		ofMesh boxMesh;
@@ -35,4 +36,13 @@ class ofApp : public ofBaseApp{
 		// materials
 		ofMaterial baseMaterial;
 		ofMaterial bgMaterial;
+
+		// orbit cam
+		ofCamera camera;
+		ofEventListener listener;
+		float orbitLon;
+		float orbitLat;
+		float orbitRadius;
+		bool isOrbiting = false;
+		glm::vec2 lastMousePos;
 };
