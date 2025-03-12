@@ -31,9 +31,9 @@ void ofApp::setup(){
 	light2->setDirectional();
 	light2->setPosition(-300, 200, 0);
 	light2->lookAt(glm::vec3(0, 0, 0));
-	light2->setDiffuseColor(ofFloatColor(.5, .5, .5));
-	light2->setSpecularColor(ofFloatColor(1.0, 1.0, 1.0));
-	light2->getShadow().setStrength(0.3f);
+	light2->setDiffuseColor(ofFloatColor(.3, .3, .3));
+	light2->setSpecularColor(ofFloatColor(.3, .3, .3));
+	light2->getShadow().setStrength(0.1f);
 	lights.push_back(light2);
 
 	// - light 2: spotlight
