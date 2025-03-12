@@ -100,6 +100,18 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+	string s = string("") +
+		"\n" + 
+		"Scanned Model: \"Stanford Happy Buddha\", 1996\n" +
+		"Brian Curless and Marc Levoy\n"
+		"http://www-graphics.stanford.edu/data/3Dscanrep/\n" + 
+		"\n" +
+		"Converted by: 3DGraphics101\n";
+	glDisable(GL_CULL_FACE);
+	ofSetColor(255);
+	ofDisableLighting();
+	ofDrawBitmapString(s, 20, 20);
+
 	ofEnableDepthTest();
 
 	for (int i = 0; i < lights.size(); i++) {
