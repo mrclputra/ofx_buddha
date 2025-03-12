@@ -753,4 +753,7 @@
   <ItemGroup>
     <None Include="bin\data\happy_buddha_stanford.glb" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="bin\data\preview.png" />
+  </ItemGroup>
 </Project>

@@ -33,7 +33,7 @@ void ofApp::setup(){
 	light2->lookAt(glm::vec3(0, 0, 0));
 	light2->setDiffuseColor(ofFloatColor(.3, .3, .3));
 	light2->setSpecularColor(ofFloatColor(.3, .3, .3));
-	light2->getShadow().setStrength(0.1f);
+	light2->getShadow().setStrength(0.6f);
 	lights.push_back(light2);
 
 	// - light 2: spotlight
@@ -73,11 +73,11 @@ void ofApp::setup(){
 	baseMaterial.setAmbientColor(ofFloatColor(0.85, 0.16, 0.43) * 0.8);
 	baseMaterial.setDiffuseColor(ofFloatColor(0.34, 0.58, 0.38, 1.0));
 	baseMaterial.setSpecularColor(ofFloatColor(ofFloatColor(1.0, 1.0, 1.0, 1.0)));
-	baseMaterial.setShininess(40);
+	baseMaterial.setShininess(30);
 
-	bgMaterial.setDiffuseColor(ofFloatColor(0.15));
-	bgMaterial.setShininess(1.0);
-	bgMaterial.setSpecularColor(ofFloatColor(0.25));
+	bgMaterial.setDiffuseColor(ofFloatColor(0.18, 0.23, 0.16, 1.0));
+	bgMaterial.setSpecularColor(ofFloatColor(ofFloatColor(1.0, 1.0, 1.0, 1.0)));
+	bgMaterial.setShininess(10);
 
 	// configure camera
 	camera.setPosition(150, 0, 0);
@@ -211,8 +211,8 @@ void ofApp::renderScene() {
 
 	bgMaterial.begin();
 	ofPushMatrix(); {
-		ofTranslate(0, -70, 0);
-		ofScale(200, 4, 200);
+		ofTranslate(0, -80, 0);
+		ofScale(100, 30, 100);
 		boxMesh.draw();
 	} ofPopMatrix();
 	bgMaterial.end();
