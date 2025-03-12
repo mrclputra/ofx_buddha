@@ -55,8 +55,8 @@ void ofApp::setup(){
 
 	// configure shadows
 	ofShadow::enableAllShadows();
-	ofShadow::setAllShadowBias(0.002f);
-	ofShadow::setAllShadowNormalBias(-4.0f);
+	ofShadow::setAllShadowBias(0.01f);
+	ofShadow::setAllShadowNormalBias(4.0f);
 	ofShadow::setAllShadowTypes(OF_SHADOW_TYPE_PCF_HIGH);
 	ofShadow::setAllShadowSampleRadius(4.0f); // softness
 #ifndef TARGET_OPENGLES
@@ -200,13 +200,13 @@ void ofApp::renderScene() {
 	} ofPopMatrix();
 	baseMaterial.end();
 
-	/*bgMaterial.begin();
+	bgMaterial.begin();
 	ofPushMatrix(); {
 		ofTranslate(0, -70, 0);
 		ofScale(200, 4, 200);
 		boxMesh.draw();
 	} ofPopMatrix();
-	bgMaterial.end();*/
+	bgMaterial.end();
 }
 
 //--------------------------------------------------------------
