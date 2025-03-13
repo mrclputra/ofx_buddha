@@ -95,7 +95,23 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	updateOrbitCamera();
+	if (!isOrbiting) {
+		orbitLon -= 0.05;
+	}
+
+	// convert camera spherical to cartesian coordinates
+	float latRad = glm::radians(orbitLat);
+	float lonRad = glm::radians(orbitLon);
+
+	glm::vec3 pos;
+	pos.x = orbitRadius * cos(latRad) * sin(lonRad);
+	pos.y = orbitRadius * sin(latRad);
+	pos.z = orbitRadius * cos(latRad) * cos(lonRad);
+
+	// update camera position
+	// can be modified to have an offset (parent object)
+	camera.setPosition(pos);
+	camera.lookAt(glm::vec3(0, 0, 0));
 }
 
 //--------------------------------------------------------------
@@ -228,22 +244,6 @@ void ofApp::renderScene() {
 		boxMesh.draw();
 	} ofPopMatrix();
 	bgMaterial.end();
-}
-
-void ofApp::updateOrbitCamera() {
-    // convert spherical to cartesian coordinates
-    float latRad = glm::radians(orbitLat);
-    float lonRad = glm::radians(orbitLon);
-
-    glm::vec3 pos;
-    pos.x = orbitRadius * cos(latRad) * sin(lonRad);
-    pos.y = orbitRadius * sin(latRad);
-    pos.z = orbitRadius * cos(latRad) * cos(lonRad);
-
-    // update camera position
-	// can be modified to have an offset (parent object)
-    camera.setPosition(pos);
-    camera.lookAt(glm::vec3(0, 0, 0));
 }
 
 //--------------------------------------------------------------

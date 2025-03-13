@@ -11,7 +11,6 @@ class ofApp : public ofBaseApp{
 		void draw();
 
 		void renderScene();
-		void updateOrbitCamera();
 		void mouseScrolled(ofMouseEventArgs& mouse);
 
 		void keyPressed(int key);
